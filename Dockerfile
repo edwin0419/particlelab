@@ -6,26 +6,20 @@
     COPY frontend/ ./
     RUN npm run build
     
-    # ---- build backend deps ----
-    FROM python:3.11-slim AS be-builder
-    WORKDIR /app/backend
-    COPY backend/requirements.txt ./
-    RUN pip install --no-cache-dir -r requirements.txt
-    
-    # ---- runtime (node + python + nginx) ----
-    FROM node:20-bullseye
-    WORKDIR /app
+# ---- runtime (node + python + nginx) ----
+FROM node:20-bullseye
+WORKDIR /app
     
     # python + nginx
     RUN apt-get update && apt-get install -y --no-install-recommends \
         python3 python3-pip nginx curl \
         && rm -rf /var/lib/apt/lists/*
 
-    RUN pip3 install --no-cache-dir gunicorn "uvicorn[standard]"
-    
-    # backend python deps
-    COPY --from=be-builder /usr/local /usr/local
-    COPY backend/ /app/backend/
+RUN pip3 install --no-cache-dir gunicorn "uvicorn[standard]"
+
+# backend code + python deps (install in runtime Python to avoid version mismatch)
+COPY backend/ /app/backend/
+RUN pip3 install --no-cache-dir -r /app/backend/requirements.txt
     
     # frontend (build 결과 + node_modules 포함)
     COPY --from=fe-builder /app/frontend /app/frontend
