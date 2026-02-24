@@ -20,7 +20,7 @@ const API_BASES = (() => {
   return Array.from(new Set(bases));
 })();
 const DEFAULT_TIMEOUT_MS = 7_000;
-const UPLOAD_TIMEOUT_MS = 120_000;
+const LONG_REQUEST_TIMEOUT_MS = 600_000;
 let activeApiBase = API_BASES[0];
 
 function isLongRunningRequest(path: string, method: string): boolean {
@@ -180,7 +180,7 @@ async function fetchWithTimeout(url: string, timeoutMs: number, init?: RequestIn
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const method = init?.method ?? "GET";
-  const timeoutMs = isLongRunningRequest(path, method) ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+  const timeoutMs = isLongRunningRequest(path, method) ? LONG_REQUEST_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
   let lastApiError: ApiError | null = null;
   let lastNetworkError: unknown = null;
 
@@ -267,8 +267,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw lastApiError;
   }
 
+  const timeoutError =
+    typeof lastNetworkError === "object" &&
+    lastNetworkError !== null &&
+    "name" in lastNetworkError &&
+    (lastNetworkError as { name?: string }).name === "AbortError";
+
   throw new ApiError(
-    "서버에 연결할 수 없습니다. 백엔드 실행 상태와 포트(8000)를 확인해 주세요.",
+    timeoutError
+      ? "처리 시간이 오래 걸려 요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요."
+      : "서버에 연결할 수 없습니다. 백엔드 실행 상태와 포트(8000)를 확인해 주세요.",
     0,
     String(lastNetworkError),
   );
@@ -276,7 +284,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
   const method = init?.method ?? "GET";
-  const timeoutMs = isLongRunningRequest(path, method) ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+  const timeoutMs = isLongRunningRequest(path, method) ? LONG_REQUEST_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
   let lastApiError: ApiError | null = null;
   let lastNetworkError: unknown = null;
 
@@ -335,8 +343,16 @@ async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
     throw lastApiError;
   }
 
+  const timeoutError =
+    typeof lastNetworkError === "object" &&
+    lastNetworkError !== null &&
+    "name" in lastNetworkError &&
+    (lastNetworkError as { name?: string }).name === "AbortError";
+
   throw new ApiError(
-    "서버에 연결할 수 없습니다. 백엔드 실행 상태와 포트(8000)를 확인해 주세요.",
+    timeoutError
+      ? "처리 시간이 오래 걸려 요청 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요."
+      : "서버에 연결할 수 없습니다. 백엔드 실행 상태와 포트(8000)를 확인해 주세요.",
     0,
     String(lastNetworkError),
   );
