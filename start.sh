@@ -7,6 +7,13 @@ echo "[BOOT] Render PORT=${PORT:-10000}"
 PORT_VAL="${PORT:-10000}"
 sed -i "s/listen 10000;/listen ${PORT_VAL};/g" /etc/nginx/nginx.conf
 
+# 런타임 Python 패키지 누락 방지(Render 캐시/레이어 꼬임 대응)
+echo "[BOOT] Checking backend Python deps..."
+if ! python3 -c "import fastapi, sqlmodel, PIL" >/dev/null 2>&1; then
+  echo "[BOOT] Installing backend Python deps at runtime..."
+  python3 -m pip install --no-cache-dir -r /app/backend/requirements.txt
+fi
+
 # 1) FastAPI (로그를 stdout으로)
 echo "[BOOT] Starting FastAPI..."
 cd /app/backend
