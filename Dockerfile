@@ -20,7 +20,7 @@ RUN python3 -m pip install --no-cache-dir gunicorn "uvicorn[standard]"
 # backend code + python deps (install in runtime Python to avoid version mismatch)
 COPY backend/ /app/backend/
 RUN python3 -m pip install --no-cache-dir -r /app/backend/requirements.txt
-RUN python3 -c "import fastapi, sqlmodel, PIL; print('backend deps ok')"
+RUN python3 -c "import fastapi, sqlmodel, PIL, eval_type_backport; print('backend deps ok')"
     
     # frontend (build 결과 + node_modules 포함)
     COPY --from=fe-builder /app/frontend /app/frontend
