@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "GmarketSans";
+  src: url("/fonts/GmarketSans-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GmarketSans";
+  src: url("/fonts/GmarketSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GmarketSans";
+  src: url("/fonts/GmarketSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: 203 32% 96%;
+  --foreground: 205 24% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 205 24% 15%;
+  --primary: 195 72% 37%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 193 33% 90%;
+  --secondary-foreground: 205 24% 15%;
+  --muted: 197 28% 92%;
+  --muted-foreground: 206 16% 38%;
+  --border: 201 27% 82%;
+  --ring: 195 72% 37%;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 210 30% 10%;
+  --foreground: 210 20% 96%;
+  --card: 210 24% 14%;
+  --card-foreground: 210 20% 96%;
+  --primary: 190 70% 42%;
+  --primary-foreground: 210 20% 98%;
+  --secondary: 210 18% 20%;
+  --secondary-foreground: 210 20% 96%;
+  --muted: 210 16% 18%;
+  --muted-foreground: 210 12% 70%;
+  --border: 210 14% 26%;
+  --ring: 190 70% 42%;
+}
+
+* {
+  @apply border-border;
+}
+
+html,
+body {
+  font-family: "GmarketSans", sans-serif;
+}
+
+body {
+  @apply bg-background font-sans text-foreground antialiased;
+  min-width: 1200px;
+  background-image: radial-gradient(circle at 15% 0%, rgba(82, 191, 200, 0.18), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(129, 177, 201, 0.2), transparent 35%);
+}
+
+.dark body {
+  background-image: radial-gradient(circle at 15% 0%, rgba(12, 74, 110, 0.45), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.55), transparent 35%);
+}

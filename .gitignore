@@ -1,0 +1,18 @@
+# Node
+frontend/node_modules
+frontend/.next
+frontend/.turbo
+
+# Python
+backend/.venv
+backend/__pycache__
+backend/app/__pycache__
+backend/*.pyc
+
+# Local runtime artifacts
+backend/app.db
+backend/storage/*
+!backend/storage/.gitkeep
+
+# OS
+.DS_Store
