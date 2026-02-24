@@ -15,7 +15,7 @@ gunicorn -k uvicorn.workers.UvicornWorker \
   -b 127.0.0.1:8000 \
   --access-logfile - \
   --error-logfile - \
-  main:app &
+  app.main:app &
 BE_PID=$!
 
 # 2) Next.js (로그를 stdout으로)

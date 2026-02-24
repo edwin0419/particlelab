@@ -8,7 +8,17 @@ import {
   StepExecuteResponse,
 } from "@/types/domain";
 
-const API_BASES = ["http://localhost:8000", "http://127.0.0.1:8000"];
+const API_BASES = (() => {
+  const envBase = process.env.NEXT_PUBLIC_API_BASE_URL?.trim()?.replace(/\/+$/, "");
+  const bases = [
+    envBase,
+    typeof window !== "undefined" ? "" : undefined,
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+  ].filter((base): base is string => typeof base === "string" && base.length > 0 || base === "");
+
+  return Array.from(new Set(bases));
+})();
 const DEFAULT_TIMEOUT_MS = 7_000;
 const UPLOAD_TIMEOUT_MS = 120_000;
 let activeApiBase = API_BASES[0];
