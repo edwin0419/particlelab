@@ -23,6 +23,17 @@ const DEFAULT_TIMEOUT_MS = 7_000;
 const UPLOAD_TIMEOUT_MS = 120_000;
 let activeApiBase = API_BASES[0];
 
+function isLongRunningRequest(path: string, method: string): boolean {
+  const upperMethod = method.toUpperCase();
+  return (
+    (path === "/api/images" && upperMethod === "POST") ||
+    path.includes("/history/import") ||
+    path.includes("/history/export") ||
+    (path.includes("/steps/") && upperMethod === "POST") ||
+    path.includes("/preview")
+  );
+}
+
 export class ApiError extends Error {
   status: number;
   body: unknown;
@@ -169,10 +180,7 @@ async function fetchWithTimeout(url: string, timeoutMs: number, init?: RequestIn
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const method = init?.method ?? "GET";
-  const upperMethod = method.toUpperCase();
-  const isLongRequest =
-    (path === "/api/images" && upperMethod === "POST") || path.includes("/history/import") || path.includes("/history/export");
-  const timeoutMs = isLongRequest ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+  const timeoutMs = isLongRunningRequest(path, method) ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
   let lastApiError: ApiError | null = null;
   let lastNetworkError: unknown = null;
 
@@ -268,8 +276,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
   const method = init?.method ?? "GET";
-  const upperMethod = method.toUpperCase();
-  const timeoutMs = path.includes("/history/export") && upperMethod === "GET" ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+  const timeoutMs = isLongRunningRequest(path, method) ? UPLOAD_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
   let lastApiError: ApiError | null = null;
   let lastNetworkError: unknown = null;
 
