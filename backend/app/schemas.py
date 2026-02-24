@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -14,16 +14,16 @@ class FileRef(BaseModel):
 class ImageAssetRead(BaseModel):
     id: str
     filename: str
-    mime_type: str | None
-    width: int | None
-    height: int | None
+    mime_type: Optional[str]
+    width: Optional[int]
+    height: Optional[int]
     created_at: datetime
     original_url: str
 
 
 class RunCreate(BaseModel):
     image_id: str
-    name: str | None = None
+    name: Optional[str] = None
 
 
 class RunRead(BaseModel):
@@ -31,7 +31,7 @@ class RunRead(BaseModel):
 
     id: str
     image_id: str
-    name: str | None
+    name: Optional[str]
     created_at: datetime
 
 
@@ -97,7 +97,7 @@ class Step1Measurement(BaseModel):
 class Step1ExecuteRequest(BaseModel):
     crop_bottom_px: int = Field(default=0, ge=0)
     um_per_px: float
-    measurement: Step1Measurement | None = None
+    measurement: Optional[Step1Measurement] = None
 
     @field_validator("um_per_px")
     @classmethod
@@ -119,9 +119,9 @@ class Step3ExecuteRequest(BaseModel):
     strength: float = Field(default=40, ge=0, le=100)
     edge_protect: float = Field(default=60, ge=0, le=100)
     quality_mode: str = Field(default="빠름")
-    input_artifact_id: str | None = None
-    exclude_mask: str | None = None
-    exclude_roi: dict[str, Any] | None = None
+    input_artifact_id: Optional[str] = None
+    exclude_mask: Optional[str] = None
+    exclude_roi: Optional[dict[str, Any]] = None
 
     @field_validator("method")
     @classmethod
@@ -144,7 +144,7 @@ class Step4ExecuteRequest(BaseModel):
     candidate_sensitivity: float = Field(default=50, ge=0, le=100)
     structure_scale_um: float = Field(default=1.0, gt=0)
     min_area_um2: float = Field(default=0.1, gt=0)
-    input_artifact_id: str | None = None
+    input_artifact_id: Optional[str] = None
 
     @field_validator("mode")
     @classmethod
@@ -166,14 +166,14 @@ class Step4PreviewRequest(Step4ExecuteRequest):
 
 
 class Step5ExecuteRequest(BaseModel):
-    base_mask_artifact_id: str | None = None
+    base_mask_artifact_id: Optional[str] = None
     edited_mask_png_base64: str = Field(min_length=1)
-    brush_mode: str | None = None
-    brush_size_px: int | None = None
+    brush_mode: Optional[str] = None
+    brush_size_px: Optional[int] = None
 
 
 class Step6ExecuteRequest(BaseModel):
-    base_mask_artifact_id: str | None = None
+    base_mask_artifact_id: Optional[str] = None
     max_expand_um: float = Field(default=1.0, ge=0.0, le=10.0)
     recover_sensitivity: float = Field(default=50.0, ge=0.0, le=100.0)
     edge_protect: float = Field(default=60.0, ge=0.0, le=100.0)
@@ -181,11 +181,11 @@ class Step6ExecuteRequest(BaseModel):
 
 
 class Step7ExecuteRequest(BaseModel):
-    base_mask_artifact_id: str | None = None
+    base_mask_artifact_id: Optional[str] = None
     hole_mode: str = Field(default="fill_all")
-    max_hole_area_um2: float | None = Field(default=None, gt=0)
+    max_hole_area_um2: Optional[float] = Field(default=None, gt=0)
     closing_enabled: bool = Field(default=False)
-    closing_radius_um: float | None = Field(default=None, ge=0)
+    closing_radius_um: Optional[float] = Field(default=None, ge=0)
 
     @field_validator("hole_mode")
     @classmethod
@@ -208,12 +208,12 @@ class Step7PreviewResponse(BaseModel):
 
 
 class Step8ExecuteRequest(BaseModel):
-    base_mask_artifact_id: str | None = None
-    step7_artifact_id: str | None = None
+    base_mask_artifact_id: Optional[str] = None
+    step7_artifact_id: Optional[str] = None
 
 
 class Step9ExecuteRequest(BaseModel):
-    step8_artifact_id: str | None = None
+    step8_artifact_id: Optional[str] = None
     smooth_level: float = Field(default=35.0, ge=0.0, le=100.0)
     resample_step_px: float = Field(default=2.0, ge=0.5, le=5.0)
     max_vertex_gap_px: float = Field(default=3.0, ge=1.0, le=8.0)
@@ -222,16 +222,16 @@ class Step9ExecuteRequest(BaseModel):
 class Step9PreviewResponse(BaseModel):
     polygon_count: int
     polygons: list[dict[str, Any]] = Field(default_factory=list)
-    image_width: int | None = None
-    image_height: int | None = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
 
 
 class Step10ExecuteRequest(BaseModel):
     split_strength: float = Field(default=50.0, ge=0.0, le=100.0)
     min_center_distance_px: int = Field(default=18, ge=1, le=512)
     min_particle_area: int = Field(default=30, ge=1, le=10_000_000)
-    step9_artifact_id: str | None = None
-    step3_artifact_id: str | None = None
+    step9_artifact_id: Optional[str] = None
+    step3_artifact_id: Optional[str] = None
 
 
 class Step10PreviewResponse(BaseModel):
@@ -239,8 +239,8 @@ class Step10PreviewResponse(BaseModel):
     preview_labels_url: str
     split_line_count: int
     label_count: int
-    image_width: int | None = None
-    image_height: int | None = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
     label_areas: dict[str, int] = Field(default_factory=dict)
     qc: dict[str, Any] = Field(default_factory=dict)
 

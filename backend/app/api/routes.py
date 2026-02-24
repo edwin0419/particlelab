@@ -8,7 +8,7 @@ import traceback
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, UploadFile
 from fastapi.responses import FileResponse
@@ -123,7 +123,7 @@ def _safe_filename(value: Any, fallback: str) -> str:
     return name
 
 
-def _remap_artifact_refs(value: Any, artifact_id_map: dict[str, str], *, parent_key: str | None = None) -> Any:
+def _remap_artifact_refs(value: Any, artifact_id_map: dict[str, str], *, parent_key: Optional[str] = None) -> Any:
     if isinstance(value, dict):
         return {
             str(key): _remap_artifact_refs(item, artifact_id_map, parent_key=str(key))
@@ -137,7 +137,7 @@ def _remap_artifact_refs(value: Any, artifact_id_map: dict[str, str], *, parent_
     return value
 
 
-def _estimate_upload_size(upload: UploadFile) -> int | None:
+def _estimate_upload_size(upload: UploadFile) -> Optional[int]:
     stream = upload.file
     try:
         current = stream.tell()
@@ -167,7 +167,7 @@ async def upload_image(
     session: Session = Depends(get_session),
 ) -> ImageAssetRead:
     form = await request.form()
-    upload: UploadFile | None = None
+    upload: Optional[UploadFile] = None
     file_item = form.get("file")
     if isinstance(file_item, StarletteUploadFile):
         upload = file_item
@@ -305,7 +305,7 @@ def create_run(payload: RunCreate, session: Session = Depends(get_session)) -> R
 
 @router.get("/runs", response_model=list[RunRead])
 def list_runs(
-    image_id: str | None = Query(default=None),
+    image_id: Optional[str] = Query(default=None),
     session: Session = Depends(get_session),
 ) -> list[RunRead]:
     stmt = select(Run)
@@ -416,7 +416,7 @@ async def import_run_history(
         raise HTTPException(status_code=404, detail="실행 이력을 찾을 수 없습니다.")
 
     form = await request.form()
-    upload: UploadFile | None = None
+    upload: Optional[UploadFile] = None
     file_item = form.get("file")
     if isinstance(file_item, StarletteUploadFile):
         upload = file_item
