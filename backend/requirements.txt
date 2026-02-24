@@ -4,3 +4,4 @@ python-multipart==0.0.20
 sqlmodel==0.0.24
 SQLAlchemy==2.0.43
 pillow==11.3.0
+eval_type_backport==0.2.2
