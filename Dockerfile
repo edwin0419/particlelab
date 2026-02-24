@@ -1,5 +1,5 @@
 # ---- build frontend ----
-    FROM node:20-bullseye AS fe-builder
+    FROM node:20-bookworm AS fe-builder
     WORKDIR /app/frontend
     COPY frontend/package*.json ./
     RUN npm ci
@@ -7,7 +7,7 @@
     RUN npm run build
     
 # ---- runtime (node + python + nginx) ----
-FROM node:20-bullseye
+FROM node:20-bookworm
 WORKDIR /app
     
     # python + nginx
@@ -16,6 +16,7 @@ WORKDIR /app
         && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --no-cache-dir gunicorn "uvicorn[standard]"
+RUN python3 --version && python3 -m pip --version
 
 # backend code + python deps (install in runtime Python to avoid version mismatch)
 COPY backend/ /app/backend/
