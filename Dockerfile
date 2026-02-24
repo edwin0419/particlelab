@@ -15,11 +15,12 @@ WORKDIR /app
         python3 python3-pip nginx curl \
         && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir gunicorn "uvicorn[standard]"
+RUN python3 -m pip install --no-cache-dir gunicorn "uvicorn[standard]"
 
 # backend code + python deps (install in runtime Python to avoid version mismatch)
 COPY backend/ /app/backend/
-RUN pip3 install --no-cache-dir -r /app/backend/requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /app/backend/requirements.txt
+RUN python3 -c "import fastapi, sqlmodel, PIL; print('backend deps ok')"
     
     # frontend (build 결과 + node_modules 포함)
     COPY --from=fe-builder /app/frontend /app/frontend

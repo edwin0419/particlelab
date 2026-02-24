@@ -10,7 +10,7 @@ sed -i "s/listen 10000;/listen ${PORT_VAL};/g" /etc/nginx/nginx.conf
 # 1) FastAPI (로그를 stdout으로)
 echo "[BOOT] Starting FastAPI..."
 cd /app/backend
-gunicorn -k uvicorn.workers.UvicornWorker \
+python3 -m gunicorn -k uvicorn.workers.UvicornWorker \
   -w 2 \
   -b 127.0.0.1:8000 \
   --access-logfile - \
